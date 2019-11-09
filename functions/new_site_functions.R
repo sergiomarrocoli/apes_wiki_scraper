@@ -153,7 +153,7 @@ switch_columns <- function(data_table){
 
 get_all_site_tables <- function(root_url){
   
-  print("getting site urls")
+  print("getting completed site urls")
   all_site_urls <- get_all_site_urls(root_url)
   
   site_characteristics_table <- data.frame(Region=character(),
