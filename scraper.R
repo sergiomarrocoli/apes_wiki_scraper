@@ -6,8 +6,7 @@ source('functions/new_site_functions.R')
 
 root_url <- "https://apeswiki.eva.mpg.de"
 
-all_site_urls <- get_all_site_urls(root_url)
-all_tables <- get_all_site_tables(all_site_urls)
+all_tables <- get_all_site_tables(root_url)
 
 basic_site_information_table <- all_tables[[1]]
 ape_status_table <- all_tables[[2]]

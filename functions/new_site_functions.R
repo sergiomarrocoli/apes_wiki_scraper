@@ -142,12 +142,19 @@ get_behaviours_table <- function(page){
   }
 }
 
+# switch columns
+switch_columns <- function(data_table){
+  data_table[c((ncol(data_table)-2):ncol(data_table), 1:(ncol(data_table)-3))]
+}
 
 
 
 # functions to get data
 
-get_all_site_tables <- function(all_site_urls){
+get_all_site_tables <- function(root_url){
+  
+  print("getting site urls")
+  all_site_urls <- get_all_site_urls(root_url)
   
   site_characteristics_table <- data.frame(Region=character(),
                                            Country=character(),
@@ -210,67 +217,73 @@ get_all_site_tables <- function(all_site_urls){
     site_page <- tryCatch(read_html(paste(root_url, site_url, sep = "")), error=function(e) FALSE)
     if(length(site_page) > 1){
       location_data <- get_region_country_and_site(site_page)
-      
-      site_characteristics <- get_site_characteristics(site_page)
-      if(length(site_characteristics) > 1){
-        site_characteristics_table[nrow(site_characteristics_table) + 1, ] <- c(location_data, site_characteristics)
-      } else {
-        print(paste(site_url, "basic information table not added"))
+      if(!is.na(location_data[1])){
+        print(paste("getting tables for", location_data[3]), sep = " ")
+        
+        site_characteristics <- get_site_characteristics(site_page)
+        if(length(site_characteristics) > 1){
+          site_characteristics_table[nrow(site_characteristics_table) + 1, ] <- c(location_data, site_characteristics)
+        } else {
+          print(paste(location_data[3], "basic information table not added"))
+        }
+        
+        ape_status <- get_ape_status(site_page)
+        if(length(ape_status) > 1){
+          ape_status$Region <- location_data[1]
+          ape_status$Country <- location_data[2]
+          ape_status$Site <- location_data[3]
+          ape_status_table <- rbind(ape_status, ape_status_table)
+        } else {
+          print(paste(location_data[3], "ape status table not added"))
+        }
+        
+        threats <- get_threats_table(site_page)
+        if(length(threats) > 1){
+          threats$Region <- location_data[1]
+          threats$Country <- location_data[2]
+          threats$Site <- location_data[3]
+          threats_table <- rbind(threats, threats_table)
+        } else {
+          print(paste(location_data[3], "threats table not added"))
+        }
+        
+        conservation_activities <- get_conservation_activities_table(site_page)
+        if(length(conservation_activities) > 1){
+          conservation_activities$Region <- location_data[1]
+          conservation_activities$Country <- location_data[2]
+          conservation_activities$Site <- location_data[3]
+          conservation_activities_table <- rbind(conservation_activities, conservation_activities_table)
+        } else {
+          print(paste(location_data[3], "conservation activities table not added"))
+        }
+        
+        impediments <- get_impediments_table(site_page)
+        if(length(impediments) > 1){
+          impediments$Region <- location_data[1]
+          impediments$Country <- location_data[2]
+          impediments$Site <- location_data[3]
+          impediments_table <- rbind(impediments, impediments_table)
+        } else {
+          print(paste(location_data[3], "impediments table not added"))
+        }
+        
+        behaviours <- get_behaviours_table(site_page)
+        if(length(behaviours) > 1){
+          behaviours$Region <- location_data[1]
+          behaviours$Country <- location_data[2]
+          behaviours$Site <- location_data[3]
+          behaviours_table <- rbind(behaviours, behaviours_table)
+        } else {
+          print(paste(location_data[3], "behaviours table not added"))
+        }
       }
-      
-      ape_status <- get_ape_status(site_page)
-      if(length(ape_status) > 1){
-        ape_status$Region <- location_data[1]
-        ape_status$Country <- location_data[2]
-        ape_status$Site <- location_data[3]
-        ape_status_table <- rbind(ape_status, ape_status_table)
-      } else {
-        print(paste(site_url, "ape status table not added"))
-      }
-      
-      threats <- get_threats_table(site_page)
-      if(length(threats) > 1){
-        threats$Region <- location_data[1]
-        threats$Country <- location_data[2]
-        threats$Site <- location_data[3]
-        threats_table <- rbind(threats, threats_table)
-      } else {
-        print(paste(site_url, "threats table not added"))
-      }
-      
-      conservation_activities <- get_conservation_activities_table(site_page)
-      if(length(conservation_activities) > 1){
-        conservation_activities$Region <- location_data[1]
-        conservation_activities$Country <- location_data[2]
-        conservation_activities$Site <- location_data[3]
-        conservation_activities_table <- rbind(conservation_activities, conservation_activities_table)
-      } else {
-        print(paste(site_url, "conservation activities table not added"))
-      }
-      
-      impediments <- get_impediments_table(site_page)
-      if(length(impediments) > 1){
-        impediments$Region <- location_data[1]
-        impediments$Country <- location_data[2]
-        impediments$Site <- location_data[3]
-        impediments_table <- rbind(impediments, impediments_table)
-      } else {
-        print(paste(site_url, "impediments table not added"))
-      }
-      
-      behaviours <- get_behaviours_table(site_page)
-      if(length(behaviours) > 1){
-        behaviours$Region <- location_data[1]
-        behaviours$Country <- location_data[2]
-        behaviours$Site <- location_data[3]
-        behaviours_table <- rbind(behaviours, behaviours_table)
-      } else {
-        print(paste(site_url, "behaviours table not added"))
-      }
-      
     }
     closeAllConnections()
   }
-  list(site_characteristics_table, ape_status_table, threats_table,
-       conservation_activities_table, impediments_table, behaviours_table)
+  list(site_characteristics_table,
+      switch_columns(ape_status_table),
+      switch_columns(threats_table),
+      switch_columns(conservation_activities_table), 
+      switch_columns(impediments_table), 
+      switch_columns(behaviours_table))
 }
