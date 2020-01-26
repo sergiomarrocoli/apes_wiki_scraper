@@ -17,7 +17,6 @@ get_all_site_urls <- function(root_url){
 
 
 get_region_urls <- get_country_urls <- function(url){
-  # main_page <- GET("https://apeswiki.eva.mpg.de", authenticate(username, password))
   main_page <- content(GET(url, authenticate(username, password)))
   region_links <- main_page %>% 
     html_nodes('.body')
@@ -36,8 +35,6 @@ get_country_urls <- function(root_url, region_url){
 }
 
 get_site_urls <- function(root_url, url){
-  # country_page <- tryCatch(read_html(paste(root_url, url, sep = "")), error=function(e) FALSE)
-  # print('getting site urls')
   country_page <- tryCatch(content(GET(paste(root_url, url, sep = ""), authenticate(username, password))), error=function(e) FALSE)
   if(length(country_page) > 1){
     country_page %>% 
@@ -176,9 +173,6 @@ get_all_site_tables <- function(root_url){
       switch_columns(impediments_table), 
       switch_columns(behaviours_table))
 }
-
-
-
 
 
 get_table <- function(site_page, selector, main_table, location_data){

@@ -3,7 +3,6 @@ library(dplyr)
 library(httr)
 
 source('functions/new_site_functions.R')
-# source('functions/login_function.R')
 source('login_details.R')
 
 root_url <- "https://apeswiki.eva.mpg.de"
