@@ -1,4 +1,3 @@
-# Parsing of HTML/XML files  
 library(rvest)
 library(dplyr)
 library(httr)
